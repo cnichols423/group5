@@ -7,16 +7,20 @@ if(isset($_POST["submitBtn"])){
     $usr = $_POST["username"];
     $pw = $_POST["pw"];
 
-    if(!userExists($usr)){
-        // add user to users table with password
-        if(addUser($usr, $pw)){
-            echo "added user";
-            // redirect
-            header("location: index.php");
-
+    if(!empty($usr) && !empty($pw)){
+        if(!userExists($usr)){
+            // add user to users table with password
+            alert("adding user");
+            if(addUser($usr, $pw)){
+                // redirect
+                 header("location: index.php");
+            }
         }
-        echo'<script>alert("failed to add user")</script>';
+        else{
+            alert("username is already in use");
+        }
     }
+
 
 }
 

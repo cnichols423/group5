@@ -11,13 +11,18 @@ require_once __DIR__."/../conn.php";
             if($stmt->execute()){
                 $stmt->store_result();
                 if($stmt->num_rows == 1 ){
+                    echo'<script>alert("user exists!")</script>';
                     $stmt->close();
                     $conn->close();
                     return true;
                 }
             }
         }
+        echo'<script>alert("user dne")</script>';
         return false;
+    }
+    function alert(string $msg){
+        echo'<script>alert("'.$msg.'")</script>';
     }
 
 
