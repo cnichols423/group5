@@ -4,21 +4,36 @@ require_once "signup.php";
 
 if(isset($_POST["submitBtn"])){
 
-    $usr = $_POST["username"];
-    $pw = $_POST["pw"];
+    $usr = trim($_POST["username"]);
+    $pw = trim($_POST["password"]);
+    $pwConfirm = trim($_POST["password_confirm"]);
+    $team = trim($_POST["team"]);
+    $division = trim($_POST["division"]);
 
-    if(!empty($usr) && !empty($pw)){
-        if(!userExists($usr)){
-            // add user to users table with password
-            alert("adding user");
-            if(addUser($usr, $pw)){
+
+    if(!hasEmpty($usr, $pw, $pwConfirm, $team, $division)){
+        // check that passwords match
+        if($pw == $pwConfirm){
+            // check if the user does not exist
+            if(!userExists($usr)){
+                // add user to users table with password
+                alert("adding user");
+                //if(addUser($usr, $pw, $team, $division)){
                 // redirect
-                 header("location: index.php");
+                //     header("location: index.php");
+                //}
+            }
+            else{
+                alert("username is already in use");
             }
         }
         else{
-            alert("username is already in use");
+            alert("passwords do not match");
         }
+
+    }
+    else{
+        alert("One or more fields are empty!");
     }
 
 
@@ -52,6 +67,9 @@ if(isset($_POST["showBox"])){
 
             <label for="showBox" style="font-size: x-small">show passwords</label>
             <input name="showBox" type="checkbox" value="value1">
+
+            <input name="team" type="text" placeholder="team name">
+            <input name="division" type="text" placeholder="team division">
 
             <button name="submitBtn">submit</button>
         </form>

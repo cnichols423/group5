@@ -1,8 +1,10 @@
 <?php
-require_once __DIR__."/../conn.php";
+require_once __DIR__."/../configure.php";
+
+        // checks if user exists
     function userExists($post_usr) : bool{
         $post_usr = trim($post_usr);
-        $conn = newCon();
+        $conn = getConn();
         $query = "SELECT id FROM users WHERE user = ?";
 
         if($stmt = $conn->prepare($query)){
@@ -21,6 +23,18 @@ require_once __DIR__."/../conn.php";
         echo'<script>alert("user dne")</script>';
         return false;
     }
+
+    // checks if any of the given args are empty
+    function hasEmpty(){
+        $argv = func_get_args();
+        $argc = func_num_args();
+        for($i = 0; $i < $argc; $i++){
+            if(empty($argv[$i])) return true;
+        }
+        return false;
+    }
+
+    // alerts for pages
     function alert(string $msg){
         echo'<script>alert("'.$msg.'")</script>';
     }

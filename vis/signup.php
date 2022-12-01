@@ -1,7 +1,7 @@
 <?php
 require_once "verify.php";
 
-function addUser($post_user, $post_pw) : bool{
+function addUser($user, $pw, $team, $division) : bool{
     // trim username
     $user = trim($post_user);
     // hash password
