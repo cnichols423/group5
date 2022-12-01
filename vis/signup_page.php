@@ -7,16 +7,14 @@ if(isset($_POST["submitBtn"])){
     $usr = trim($_POST["username"]);
     $pw = trim($_POST["password"]);
     $pwConfirm = trim($_POST["password_confirm"]);
-    $team = trim($_POST["team"]);
-    $division = trim($_POST["division"]);
-    $coach = trim($_POST["coach"]);
 
 
-    if(!hasEmpty($usr, $pw, $pwConfirm, $team, $division, $coach)){
+    if(!hasEmpty($usr, $pw, $pwConfirm)){
         // check that passwords match
-        if($pw == $pwConfirm){
+
+        if($pw == $pwConfirm) {
             // check if the user does not exist
-            if(!userExists($usr)){
+            if (!userExists($usr)) {
                 $_SESSION['newUser'] = $usr;
                 $_SESSION['newUserPassword'] = $pw;
                 // add user to users table with password
@@ -25,8 +23,7 @@ if(isset($_POST["submitBtn"])){
                 // redirect
                 //     header("location: index.php");
                 //}
-            }
-            else{
+            } else {
                 alert("username is already in use");
             }
         }
