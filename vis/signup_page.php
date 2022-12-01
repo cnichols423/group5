@@ -42,16 +42,7 @@ if(isset($_POST["submitBtn"])){
 
 }
 
-if(isset($_POST["showBox"])){
-    echo '<script>
-        pw = document.getElementById("pw");
-        pwconf = document.getElementById("pwconf");
-        if(pw.type == "password") pw.type = "text";
-        else pw.type = "password";
-        pwconf.type = pw.type;
-</script>';
 
-}
 ?>
 <!DOCTYPE html>
 <html lang ="en">
@@ -69,7 +60,17 @@ if(isset($_POST["showBox"])){
             <input name="password_confirm" placeholder="confirm password" type = "password" id="pwconf">
 
             <label for="showBox" style="font-size: x-small">show passwords</label>
-            <input name="showBox" type="checkbox" value="value1">
+
+            <input name="showBox" type="checkbox"  id="checkBox" onclick="showHide()">
+            <script>
+                function showHide(){
+                    pw = document.getElementById("pw");
+                    pwConf = document.getElementById("pwconf");
+                    if(pw.type == "password") pw.type = "text";
+                    else pw.type = "password";
+                    pwConf.type = pw.type;
+                }
+            </script>
 
             <button name="submitBtn">submit</button>
         </form>
