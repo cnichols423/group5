@@ -9,13 +9,16 @@ if(isset($_POST["submitBtn"])){
     $pwConfirm = trim($_POST["password_confirm"]);
     $team = trim($_POST["team"]);
     $division = trim($_POST["division"]);
+    $coach = trim($_POST["coach"]);
 
 
-    if(!hasEmpty($usr, $pw, $pwConfirm, $team, $division)){
+    if(!hasEmpty($usr, $pw, $pwConfirm, $team, $division, $coach)){
         // check that passwords match
         if($pw == $pwConfirm){
             // check if the user does not exist
             if(!userExists($usr)){
+                $_SESSION['newUser'] = $usr;
+                $_SESSION['newUserPassword'] = $pw;
                 // add user to users table with password
                 alert("adding user");
                 //if(addUser($usr, $pw, $team, $division)){
@@ -67,9 +70,6 @@ if(isset($_POST["showBox"])){
 
             <label for="showBox" style="font-size: x-small">show passwords</label>
             <input name="showBox" type="checkbox" value="value1">
-
-            <input name="team" type="text" placeholder="team name">
-            <input name="division" type="text" placeholder="team division">
 
             <button name="submitBtn">submit</button>
         </form>

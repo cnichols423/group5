@@ -31,6 +31,7 @@ create table division(
 
 create table team(
   teamId int not null auto_increment,
+  teamName varchar(45) not null,
   divisionId int not null,
   teamUserId int not null,
   teamCoachId int not null,
