@@ -84,6 +84,7 @@ create table trades(
     tradeId int not null auto_increment,
     usrSenderId int not null,
     usrReceiverId int not null,
+    tradeStatus varchar(45) not null,
     playerId int not null,
     index senderInd (usrSenderId),
     index receiverInd (usrReceiverId),
