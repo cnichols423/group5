@@ -5,7 +5,7 @@ Configure.php:
 <?php
 
 function getConn(){
-    return new mysqli("localhost", <username>, <passsword>, <username>);
+    return new mysqli("localhost", <username>, <mysql passsword>, <username>);
 }
 
 ?>
