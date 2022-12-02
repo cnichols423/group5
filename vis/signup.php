@@ -24,23 +24,28 @@ class registration{
     private string $username;
     private string $password;
 
-    private function setTeamId(){
+    private function setTeamId() : bool{
         $query = "select teamId from team where teamUsername = ?";
         $conn = getConn();
-        $stmt = $conn->prepare($query);
+        if($stmt = $conn->prepare($query)){
+            $stmt->bind_param("s", $param_username);
 
-        $stmt->bind_param("s", $param_username);
+            $param_username = $this->username;
 
-        $param_username = $this->username;
+            if($stmt->execute()){
+                $stmt->store_result();
+                $stmt->bind_result($result);
+                $this->teamId = $result;
 
-        $stmt->execute();
+                $stmt->close();
+                $conn->close();
+                return true;
+            }
 
-        $stmt->store_result();
-        $stmt->bind_result($ourTeamId);
-        $this->teamId = $ourTeamId;
-
-        $stmt->close();
+            $stmt->close();
+        }
         $conn->close();
+        return false;
     }
 
     private function addTeam($teamName, $division, $location) : bool{
@@ -52,23 +57,29 @@ class registration{
 
         $query = "insert into team (teamName, division, teamUsername, teamLocation) values (?, ?, ?, ?) ";
         $conn = getConn();
-        $stmt = $conn->prepare($query);
 
-        $stmt->bind_param("ssss", $param_teamName, $param_division, $param_username, $param_location);
+        if($stmt = $conn->prepare($query)){
 
-        // bind
-        $param_teamName = $this->teamName;
-        $param_username = $this->username;
-        $param_division = $this->division;
-        $param_location = $this->location;
+            $stmt->bind_param("ssss", $param_teamName, $param_division, $param_username, $param_location);
 
-        $success = $stmt->execute();
+            // bind
+            $param_teamName = $this->teamName;
+            $param_username = $this->username;
+            $param_division = $this->division;
+            $param_location = $this->location;
 
-        $stmt->close();
+            if($stmt->execute()){
+                if($this->setTeamId()){
+                    $stmt->close();
+                    $conn->close();
+                    return true;
+                }
+            }
+            $stmt->close();
+        }
         $conn->close();
+        return false;
 
-        $this->setTeamId();
-        return $success;
     }
 
     // add user
@@ -79,18 +90,24 @@ class registration{
         $query = "insert into users (username, password)  values (?, ?)";
         $conn = getConn();
 
-        $stmt = $conn->prepare($query);
+        if($stmt = $conn->prepare($query)){
 
-        $stmt->bind_param("ss", $param_user, $param_password);
-        $param_user = $this->username;
-        $param_password = $this->password;
+            $stmt->bind_param("ss", $param_user, $param_password);
+            $param_user = $this->username;
+            $param_password = $this->password;
 
-        $success = $stmt->execute();
+            if($stmt->execute()){
+                $stmt->close();
+                $conn->close();
+                return true;
+            }
+            $stmt->close();
+        }
 
-        $stmt->close();
         $conn->close();
-        return $success;
+        return false;
     }
+
 
     private function addCoach(string $coachFname, string $coachLname, int $coachNumSeasons) : bool {
 
@@ -146,12 +163,28 @@ class registration{
         return $success;
     }
 
-    public function registerNew($username, $password, $teamName, $division, $location, $coachF, $coachL, $coachExp, $coachPay){
+    public function registerNew($username, $password, $teamName, $division,
+                                $location, $coachF, $coachL, $coachExp, $coachPay) : bool{
+        if($this->addUser($username, $password)){
 
-        return $this->addUser($username, $password) &&
-        $this->addTeam($teamName, $division, $location) &&
-        $this->addCoach($coachF, $coachL, $coachExp) &&
-        $this->newCoachEmployment($coachPay);
+            if($this->addTeam($teamName, $division, $location)){
+
+                if($this->addCoach($coachF, $coachL, $coachExp)){
+
+                    if($this->newCoachEmployment($coachPay)){
+
+                        return true;
+                    }
+                    // if we fail purge all new information
+                    $this->purgeNewCoach();
+                }
+
+                $this->purgeNewTeam();
+            }
+            $this->purgeNewUser();
+        }
+
+        return false;
 
     }
 
@@ -176,8 +209,69 @@ class registration{
         }
 
         return 0;
-}
+    }
 
+    private function purgeNewUser() : bool{
+        $query = "delete from users where username = ?";
+        $conn = getConn();
+        if($stmt = $conn->prepare($query)){
+            $stmt->bind_param("s", $param_username);
+            $param_username = $this->username;
+
+            if($stmt->execute()){
+             $stmt->close();
+             $conn->close();
+             return true;
+            }
+            $stmt->close();
+        }
+        $conn->close();
+        echo'<script>alert("failed to purge user")</script>';
+        return false;
+    }
+
+    private function purgeNewTeam(){
+        $query = "delete from team where teamId = ?";
+        $conn =getConn();
+        if($stmt =$conn->prepare($query)){
+            $stmt->bind_param("i", $param_id);
+            $param_id = $this->teamId;
+
+            if($stmt->execute()){
+                $stmt->close();
+                $conn->close();
+                return true;
+            }
+
+            $stmt->close();
+        }
+        $conn->close();
+        echo'<script>alert("failed to purge team")</script>';
+        return false;
+    }
+
+    private function purgeNewCoach() : bool{
+        $this->coachId = $this->fetchMaxCoachId();
+        $deletion = "delete from coach where coachId = ?";
+
+        $conn = getConn();
+
+        if($stmt = $conn->prepare($deletion)){
+            $stmt->bind_param("i", $param_id);
+            $param_id = $this->coachId;
+            if($stmt->execute()){
+                $stmt->close();
+                $conn->close();
+                return true;
+            }
+            $stmt->close();
+        }
+
+        $conn->close();
+        echo'<script>alert("failed to purge coach")</script>';
+        return false;
+
+    }
 
 }
 
