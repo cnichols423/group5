@@ -1,8 +1,7 @@
 create table users(
-    userId int not null auto_increment,
-    username int not null unique,
-    password int not null,
-    primary key (userId)
+    username varchar(45) not null unique,
+    password varchar(45) not null,
+    primary key (username)
 );
 
 create table player(
@@ -18,31 +17,26 @@ create table coach(
   coachId int not null auto_increment,
   coachFname varchar(45) not null,
   coachLname varchar(45) not null,
-  coachSalary int not null,
   seasonsCoached int not null,
   primary key (coachId)
 );
 
 create table division(
-  divisionId int not null auto_increment,
-  divisionName varchar(45),
-  primary key (divisionId)
+  division varchar(45) not null unique ,
+  primary key (division)
 );
 
 create table team(
   teamId int not null auto_increment,
   teamName varchar(45) not null,
-  divisionId int not null,
-  teamUserId int not null,
-  teamCoachId int not null,
+  division varchar(45) not null,
+  teamUsername varchar(45) not null,
   teamLocation varchar(45) not null,
   primary key (teamId),
-  index userInd (teamUserId),
-  index teamCoachInd(teamCoachId),
-  index divisionInd(divisionId),
-  foreign key (teamUserId) references users(userId),
-  foreign key (teamCoachId) references coach(coachId),
-  foreign key (divisionId) references division(divisionId)
+  index userInd (teamUsername),
+  index divisionInd(division),
+  foreign key (teamUsername) references users(username),
+  foreign key (division) references division(division)
 );
 
 create table playerTeam(
@@ -63,6 +57,7 @@ create table coachTeam(
     coachTeamRelId int not null auto_increment,
     coachId int not null,
     teamId int not null,
+    coachSalary int not null,
     primary key (coachTeamRelId),
     index coachInd (coachId),
     index teamInd (teamId),
@@ -82,13 +77,13 @@ create table playerInfo(
 
 create table trades(
     tradeId int not null auto_increment,
-    usrSenderId int not null,
-    usrReceiverId int not null,
+    usrSenderName varchar(45) not null,
+    usrReceiverName varchar(45) not null,
     tradeStatus varchar(45) not null,
     playerId int not null,
-    index senderInd (usrSenderId),
-    index receiverInd (usrReceiverId),
-    foreign key (usrReceiverId) references users(userId),
-    foreign key (usrSenderId) references users(userId),
+    index senderInd (usrSenderName),
+    index receiverInd (usrReceiverName),
+    foreign key (usrReceiverName) references users(username),
+    foreign key (usrSenderName) references users(username),
     primary key (tradeId)
 );
