@@ -35,6 +35,7 @@ class registration{
 
         $stmt->execute();
 
+        $stmt->store_result();
         $stmt->bind_result($ourTeamId);
         $this->teamId = $ourTeamId;
 
@@ -153,6 +154,7 @@ class registration{
         $conn = getConn();
         $stmt = $conn->prepare("select max(coachId) from coach");
         $stmt->execute();
+        $stmt->store_result();
         $stmt->bind_result($max);
         $stmt->close();
         $conn->close();
