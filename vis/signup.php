@@ -101,21 +101,26 @@ class registration{
         $query = "insert into coach (coachId, coachFname, coachLname,  seasonsCoached) values (?, ?
 , ?,  ?)";
         $conn = getConn();
-        $stmt = $conn->prepare($query);
-        $this->coachId = $this->fetchMaxCoachId() + 1;
+        if($stmt = $conn->prepare($query)) {
+            $this->coachId = $this->fetchMaxCoachId() + 1;
 
-        $stmt->bind_param("issii", $param_id, $param_f, $param_l,  $param_exp);
+            $stmt->bind_param("issii", $param_id, $param_f, $param_l, $param_exp);
 
-        $param_id = $this->coachId;
-        $param_f = $this->coachFirstName;
-        $param_l = $this->coachLastName;
-        $param_exp = $this->coachNumberOfSeasons;
+            $param_id = $this->coachId;
+            $param_f = $this->coachFirstName;
+            $param_l = $this->coachLastName;
+            $param_exp = $this->coachNumberOfSeasons;
 
-        $result = $stmt->execute();
+            if($stmt->execute()){
+                $stmt->close();
+                $conn->close();
+                return true;
+            }
 
-        $stmt->close();
+            $stmt->close();
+        }
         $conn->close();
-        return $result;
+        return false;
     }
 
 
@@ -152,13 +157,25 @@ class registration{
 
     private function fetchMaxCoachId() : int {
         $conn = getConn();
-        $stmt = $conn->prepare("select max(coachId) from coach");
-        $stmt->execute();
-        $stmt->store_result();
-        $stmt->bind_result($max);
-        $stmt->close();
-        $conn->close();
-        return $max;
+        if($stmt = $conn->prepare("select max(coachId) from coach")){
+            if($stmt->execute()){
+
+                $stmt->store_result();
+                $stmt->bind_result($max);
+
+                if(empty($max)){
+                    $max = 0;
+                }
+
+                $stmt->close();
+                $conn->close();
+
+                return $max;
+            }
+
+        }
+
+        return 0;
 }
 
 
