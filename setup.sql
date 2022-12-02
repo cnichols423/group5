@@ -14,7 +14,7 @@ create table player(
 );
 
 create table coach(
-  coachId int not null auto_increment,
+  coachId int not null,
   coachFname varchar(45) not null,
   coachLname varchar(45) not null,
   seasonsCoached int not null,
