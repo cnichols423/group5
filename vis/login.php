@@ -2,15 +2,16 @@
 require_once "verify.php";
 
 // verifies login info for existing users
-function checkLoginInfo($usr, $pw){
+function checkLoginInfo($usr, $pw) : bool{
     // open new connection
-    $conn = newCon();
+    $conn = getConn();
     // looking up a password
-    $query = "SELECT password FROM users WHERE user = ?";
+    $query = "SELECT password FROM users WHERE username = ?";
 
     if($stmt = $conn->prepare($query)){
+
         // binding search param
-        $stmt->bind_param("s", $param_usr);
+        $stmt->bind_param("ss", $param_usr);
         $param_usr = $usr;
 
         if($stmt->execute()){
@@ -18,7 +19,7 @@ function checkLoginInfo($usr, $pw){
             if($stmt->num_rows == 1){
                 // if exists bind result and check hashed pw
                 $stmt->bind_result($hashed_pw);
-                if(password_verify($pw, $hashed_pw)){
+                if(password_verify($pw, $hashed_pw)) {
                     // close connection and stmt
                     $stmt->close();
                     $conn->close();
