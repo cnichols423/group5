@@ -5,7 +5,7 @@ require_once __DIR__."/../configure.php";
     function userExists($post_usr) : bool{
         $post_usr = trim($post_usr);
         $conn = getConn();
-        $query = "SELECT userId FROM users WHERE username = ?";
+        $query = "SELECT username FROM users WHERE username = ?";
 
         if($stmt = $conn->prepare($query)){
             $stmt->bind_param("s", $param_usr);
