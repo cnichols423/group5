@@ -87,3 +87,8 @@ create table trades(
     foreign key (usrSenderName) references users(username),
     primary key (tradeId)
 );
+
+insert into division (division) values ("North");
+insert into division (division) values ("East");
+insert into division (division) values ("South");
+insert into division (division) values ("West");
