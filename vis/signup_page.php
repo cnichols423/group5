@@ -1,8 +1,11 @@
 <?php
+ob_start();
+
+session_start();
 require_once "signup.php";
 
-
 if(isset($_POST["submitBtn"])){
+
 
     $usr = trim($_POST["username"]);
     $pw = trim($_POST["password"]);
@@ -13,17 +16,21 @@ if(isset($_POST["submitBtn"])){
         // check that passwords match
 
         if($pw == $pwConfirm) {
+
             // check if the user does not exist
             if (!userExists($usr)) {
+
+                // save password and username to session var
                 $_SESSION['newUser'] = $usr;
-                $_SESSION['newUserPassword'] = $pw;
-                // add user to users table with password
-                alert("adding user");
-                //if(addUser($usr, $pw, $team, $division)){
+                // hash password
+                $_SESSION['newUserPassword'] = password_hash($pw, PASSWORD_DEFAULT);
+
                 // redirect
-                //     header("location: index.php");
-                //}
-            } else {
+                header("location: teamInfo.php");
+                exit();
+
+            }
+            else {
                 alert("username is already in use");
             }
         }
@@ -51,25 +58,27 @@ if(isset($_POST["submitBtn"])){
     <body>
     <h2>Signup</h2>
         <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-            <input name="username" placeholder="username">
+            <label>
+                <input name="username" placeholder="username">
+            </label>
 
-            <input name="password" placeholder="password" type="password" id="pw">
-            <input name="password_confirm" placeholder="confirm password" type = "password" id="pwconf">
+            <label for="pw"></label><input name="password" placeholder="password" type="password" id="pw">
+            <label for="pwconf"></label><input name="password_confirm" placeholder="confirm password" type = "password" id="pwconf">
 
             <label for="showBox" style="font-size: x-small">show passwords</label>
 
-            <input name="showBox" type="checkbox"  id="checkBox" onclick="showHide()">
+            <label for="checkBox"></label><input name="showBox" type="checkbox" id="checkBox" onclick="showHide()">
             <script>
                 function showHide(){
-                    pw = document.getElementById("pw");
-                    pwConf = document.getElementById("pwconf");
-                    if(pw.type == "password") pw.type = "text";
+                    let pw = document.getElementById("pw");
+                    let pwConf = document.getElementById("pwconf");
+                    if(pw.type === "password") pw.type = "text";
                     else pw.type = "password";
                     pwConf.type = pw.type;
                 }
             </script>
 
-            <button name="submitBtn">submit</button>
+            <button name="submitBtn" value="submit">submit</button>
         </form>
     </body>
 </html>
