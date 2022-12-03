@@ -22,7 +22,7 @@ create table coach(
 );
 
 create table division(
-  division varchar(45) not null unique ,
+  division varchar(45) not null unique,
   primary key (division)
 );
 
